@@ -70,6 +70,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   MatrixXd K = PHt * Si;
 
   //new estimate
+  // TODO: DRY with Update()
   x_ = x_ + (K * y);
   long x_size = x_.size();
   MatrixXd I = MatrixXd::Identity(x_size, x_size);
@@ -81,15 +82,17 @@ VectorXd KalmanFilter::h(const VectorXd x) {
   float py = x(1);
   float vx  = x(2);
   float vy = x(3);
-  VectorXd result(3);
 
-  float rho = px*px + py*py;
-  if(fabs(rho) < 0.0001){
-    cout << "h() - Error - Division by Zero" << endl;
-    return result;
+  float ro = sqrt(px*px + py*py);
+  if(ro < 0.00001){
+    px += 0.001;
+    py += 0.001;
+    ro = sqrt(px*px + py*py);
   }
-  result(0) = sqrt(rho);
-  result(1) = atan2(py, px);
-  result(2) = (px*vx + py*vy)/result(0);
-  return result;
+  float theta = atan2(py, px);
+  float ro_dot = (px*vx + py*vy)/ro;
+
+  VectorXd h(3);
+  h << ro, theta, ro_dot;
+  return h;
 }

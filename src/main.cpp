@@ -85,7 +85,7 @@ int main()
           		iss >> ro;
           		iss >> theta;
           		iss >> ro_dot;
-          		meas_package.raw_measurements_ << ro,theta, ro_dot;
+          		meas_package.raw_measurements_ << ro, theta, ro_dot;
           		iss >> timestamp;
           		meas_package.timestamp_ = timestamp;
           }
