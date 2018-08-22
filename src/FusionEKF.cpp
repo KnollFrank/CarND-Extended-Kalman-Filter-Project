@@ -36,8 +36,8 @@ FusionEKF::FusionEKF() {
     * Finish initializing the FusionEKF.
     * Set the process and measurement noises
   */
-
-
+  H_laser_ << 1, 0, 0, 0,
+      0, 1, 0, 0;
 }
 
 /**
@@ -62,7 +62,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     // first measurement
     cout << "EKF: " << endl;
     ekf_.x_ = VectorXd(4);
-    ekf_.x_ << 1, 1, 1, 1;
 
     //state covariance matrix P
     ekf_.P_ = MatrixXd(4, 4);
@@ -72,15 +71,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
           0, 0, 0, 1000;
 
 
-    //measurement covariance
-    ekf_.R_ = MatrixXd(2, 2);
-    ekf_.R_ << 0.0225, 0,
-          0, 0.0225;
-
     //measurement matrix
-    ekf_.H_ = MatrixXd(2, 4);
-    ekf_.H_ << 1, 0, 0, 0,
-          0, 1, 0, 0;
+    ekf_.H_ = H_laser_;
 
     //the initial transition matrix F_
     ekf_.F_ = MatrixXd(4, 4);
@@ -93,11 +85,23 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       /**
       Convert radar from polar to cartesian coordinates and initialize state.
       */
+      double rho = measurement_pack.raw_measurements_(0);
+      double phi = measurement_pack.raw_measurements_(1);
+      double rhodot = measurement_pack.raw_measurements_(2);
+      const double px = rho * cos(phi);
+      const double py = rho * sin(phi);
+      const double vx = rhodot * cos(phi);
+      const double vy = rhodot * sin(phi);
+
+      ekf_.x_ << px, py, vx, vy;
+      ekf_.R_ = R_radar_;
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
       /**
       Initialize state.
       */
+      ekf_.x_ << measurement_pack.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0, 0;
+      ekf_.R_ = R_laser_;
     }
 
     // done initializing, no need to predict or update
@@ -152,9 +156,11 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // Radar updates
+    ekf_.R_ = R_radar_;
     ekf_.UpdateEKF(measurement_pack.raw_measurements_);
   } else {
     // Laser updates
+    ekf_.R_ = R_laser_;
     ekf_.Update(measurement_pack.raw_measurements_);
   }
 

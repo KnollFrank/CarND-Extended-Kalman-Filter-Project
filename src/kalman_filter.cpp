@@ -1,4 +1,7 @@
 #include "kalman_filter.h"
+#include "tools.h"
+#include <cmath>
+#include <iostream>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -55,4 +58,38 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   TODO:
     * update the state by using Extended Kalman Filter equations
   */
+  Tools tools;
+  MatrixXd H_j = tools.CalculateJacobian(x_);
+  // TODO: apply hint Normalizing Angles in "Tips and Tricks"
+  VectorXd y = z - h(x_);
+  y(1) = atan2(sin(y(1)), cos(y(1)));
+  MatrixXd Ht = H_j.transpose();
+  MatrixXd S = H_j * P_ * Ht + R_;
+  MatrixXd Si = S.inverse();
+  MatrixXd PHt = P_ * Ht;
+  MatrixXd K = PHt * Si;
+
+  //new estimate
+  x_ = x_ + (K * y);
+  long x_size = x_.size();
+  MatrixXd I = MatrixXd::Identity(x_size, x_size);
+  P_ = (I - K * H_j) * P_;
+}
+
+VectorXd KalmanFilter::h(const VectorXd x) {
+  float px = x(0);
+  float py = x(1);
+  float vx  = x(2);
+  float vy = x(3);
+  VectorXd result(3);
+
+  float rho = px*px + py*py;
+  if(fabs(rho) < 0.0001){
+    cout << "h() - Error - Division by Zero" << endl;
+    return result;
+  }
+  result(0) = sqrt(rho);
+  result(1) = atan2(py, px);
+  result(2) = (px*vx + py*vy)/result(0);
+  return result;
 }
