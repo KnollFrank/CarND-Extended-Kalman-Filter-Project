@@ -69,9 +69,7 @@ float KalmanFilter::normalizeAngle(float angle)
 MatrixXd KalmanFilter::getK(const MatrixXd& H) {
   MatrixXd Ht = H.transpose();
   MatrixXd S = H * P_ * Ht + R_;
-  MatrixXd Si = S.inverse();
-  MatrixXd PHt = P_ * Ht;
-  MatrixXd K = PHt * Si;
+  MatrixXd K = P_ * Ht * S.inverse();
   return K;
 }
 
