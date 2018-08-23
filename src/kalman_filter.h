@@ -66,6 +66,7 @@ private:
   Eigen::MatrixXd F_;
 
   Eigen::VectorXd h(const Eigen::VectorXd x);
+  void updateEstimates(const Eigen::MatrixXd& K, const Eigen::MatrixXd& H, const Eigen::VectorXd& y);
 };
 
 #endif /* KALMAN_FILTER_H_ */

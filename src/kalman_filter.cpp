@@ -50,11 +50,14 @@ void KalmanFilter::Update(const VectorXd &z) {
   MatrixXd PHt = P_ * Ht;
   MatrixXd K = PHt * Si;
 
-  //new estimate
+  updateEstimates(K, H_, y);
+}
+
+void KalmanFilter::updateEstimates(const MatrixXd& K, const MatrixXd& H, const VectorXd& y) {
   x_ = x_ + (K * y);
   long x_size = x_.size();
   MatrixXd I = MatrixXd::Identity(x_size, x_size);
-  P_ = (I - K * H_) * P_;
+  P_ = (I - K * H) * P_;
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
@@ -74,11 +77,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   MatrixXd K = PHt * Si;
 
   //new estimate
-  // TODO: DRY with Update()
-  x_ = x_ + (K * y);
-  long x_size = x_.size();
-  MatrixXd I = MatrixXd::Identity(x_size, x_size);
-  P_ = (I - K * H_j) * P_;
+  updateEstimates(K, H_j, y);
 }
 
 VectorXd KalmanFilter::h(const VectorXd x) {
