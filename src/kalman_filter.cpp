@@ -22,6 +22,18 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
   Q_ = Q_in;
 }
 
+void KalmanFilter::Predict(float dt, float noise_ax, float noise_ay) {
+  /**
+  TODO:
+    * predict the state
+  */
+  updateF(dt);
+  updateQ(dt, noise_ax, noise_ay);
+
+  x_ = F_ * x_;
+  P_ = F_ * P_ * F_.transpose() + Q_;
+}
+
 void KalmanFilter::updateF(float dt) {
   //Modify the F matrix so that the time is integrated
   F_(0, 2) = dt;
@@ -37,18 +49,6 @@ void KalmanFilter::updateQ(float dt, float noise_ax, float noise_ay) {
         0,                   dt_4 / 4 * noise_ay, 0,                   dt_3 / 2 * noise_ay,
         dt_3 / 2 * noise_ax, 0,                   dt_2 * noise_ax,     0,
         0,                   dt_3 / 2 * noise_ay, 0,                   dt_2 * noise_ay;
-}
-
-void KalmanFilter::Predict(float dt, float noise_ax, float noise_ay) {
-  /**
-  TODO:
-    * predict the state
-  */
-  updateF(dt);
-  updateQ(dt, noise_ax, noise_ay);
-
-  x_ = F_ * x_;
-  P_ = F_ * P_ * F_.transpose() + Q_;
 }
 
 void KalmanFilter::Update(const VectorXd &z, const MatrixXd &R) {
