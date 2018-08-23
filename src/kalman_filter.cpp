@@ -23,11 +23,15 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
   Q_ = Q_in;
 }
 
-void KalmanFilter::Predict() {
+void KalmanFilter::Predict(float delta_T) {
   /**
   TODO:
     * predict the state
   */
+  //Modify the F matrix so that the time is integrated
+  F_(0, 2) = delta_T;
+  F_(1, 3) = delta_T;
+
   x_ = F_ * x_;
   MatrixXd Ft = F_.transpose();
   P_ = F_ * P_ * Ft + Q_;

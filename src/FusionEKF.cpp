@@ -136,17 +136,13 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   float dt_3 = dt_2 * dt;
   float dt_4 = dt_3 * dt;
 
-  //Modify the F matrix so that the time is integrated
-  ekf_.F_(0, 2) = dt;
-  ekf_.F_(1, 3) = dt;
-
   //set the process covariance matrix Q
   ekf_.Q_ <<  dt_4/4*noise_ax, 0,               dt_3/2*noise_ax, 0,
               0,               dt_4/4*noise_ay, 0,               dt_3/2*noise_ay,
               dt_3/2*noise_ax, 0,               dt_2*noise_ax,   0,
               0,               dt_3/2*noise_ay, 0,               dt_2*noise_ay;
 
-  ekf_.Predict();
+  ekf_.Predict(dt);
 
   /*****************************************************************************
    *  Update
