@@ -11,12 +11,6 @@ public:
   // state covariance matrix
   Eigen::MatrixXd P_;
 
-  // process covariance matrix
-  Eigen::MatrixXd Q_;
-
-  // measurement matrix
-  Eigen::MatrixXd H_;
-
   // measurement covariance matrix
   Eigen::MatrixXd R_;
 
@@ -47,7 +41,7 @@ public:
    * using the process model
    * @param delta_T Time between k and k+1 in s
    */
-  void Predict(float delta_T);
+  void Predict(float dt, float noise_ax, float noise_ay);
 
   /**
    * Updates the state by using standard Kalman Filter equations
@@ -64,11 +58,17 @@ public:
 private:
   // state transition matrix
   Eigen::MatrixXd F_;
+  // measurement matrix
+  Eigen::MatrixXd H_;
+  // process covariance matrix
+  Eigen::MatrixXd Q_;
 
   Eigen::VectorXd h(const Eigen::VectorXd x);
   void updateEstimates(const Eigen::MatrixXd& K, const Eigen::MatrixXd& H, const Eigen::VectorXd& y);
   Eigen::MatrixXd getK(const Eigen::MatrixXd& H);
   float normalizeAngle(float angle);
+  void updateF(float dt);
+  void updateQ(float dt, float noise_ax, float noise_ay);
 };
 
 #endif /* KALMAN_FILTER_H_ */
