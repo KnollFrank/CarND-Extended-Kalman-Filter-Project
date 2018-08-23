@@ -68,6 +68,7 @@ private:
   Eigen::VectorXd h(const Eigen::VectorXd x);
   void updateEstimates(const Eigen::MatrixXd& K, const Eigen::MatrixXd& H, const Eigen::VectorXd& y);
   Eigen::MatrixXd getK(const Eigen::MatrixXd& H);
+  float normalizeAngle(float angle);
 };
 
 #endif /* KALMAN_FILTER_H_ */

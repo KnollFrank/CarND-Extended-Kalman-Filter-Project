@@ -55,11 +55,15 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   */
   Tools tools;
   MatrixXd H_j = tools.CalculateJacobian(x_);
-  // TODO: apply hint Normalizing Angles in "Tips and Tricks"
   VectorXd y = z - h(x_);
-  y(1) = atan2(sin(y(1)), cos(y(1)));
+  y(1) = normalizeAngle(y(1));
   MatrixXd K = getK(H_j);
   updateEstimates(K, H_j, y);
+}
+
+float KalmanFilter::normalizeAngle(float angle)
+{
+  return atan2(sin(angle), cos(angle));
 }
 
 MatrixXd KalmanFilter::getK(const MatrixXd& H) {
