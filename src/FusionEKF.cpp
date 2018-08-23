@@ -89,13 +89,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       */
       double ro = measurement_pack.raw_measurements_(0);
       double theta = measurement_pack.raw_measurements_(1);
-      double ro_dot = measurement_pack.raw_measurements_(2);
-
       VectorXd p = polar2cartesian(ro, theta);
-      // TODO: wie werden Geschwindigkeiten von Polarkoordinaten in kartesische Koordinaten transformiert? nachrechnen!
-      VectorXd v = polar2cartesian(ro_dot, theta);
-
-      ekf_.x_ << p(0), p(1), v(0), v(1);
+      ekf_.x_ << p(0), p(1), 0, 0;
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
       /**
