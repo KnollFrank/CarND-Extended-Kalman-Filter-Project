@@ -87,12 +87,6 @@ VectorXd KalmanFilter::h(const VectorXd x) {
   float vy = x(3);
 
   float ro = sqrt(px*px + py*py);
-  if(ro < 0.00001){
-    // TODO: warum +, oder ganz anders?
-    px += 0.001;
-    py += 0.001;
-    ro = sqrt(px*px + py*py);
-  }
   float theta = atan2(py, px);
   float ro_dot = (px*vx + py*vy)/ro;
 
