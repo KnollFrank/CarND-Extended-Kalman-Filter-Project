@@ -44,8 +44,7 @@ void KalmanFilter::Update(const VectorXd &z) {
   */
   VectorXd z_pred = H_ * x_;
   VectorXd y = z - z_pred;
-  MatrixXd K = getK(H_);
-  updateEstimates(K, H_, y);
+  updateEstimates(getK(H_), H_, y);
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
@@ -57,8 +56,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   MatrixXd H_j = tools.CalculateJacobian(x_);
   VectorXd y = z - h(x_);
   y(1) = normalizeAngle(y(1));
-  MatrixXd K = getK(H_j);
-  updateEstimates(K, H_j, y);
+  updateEstimates(getK(H_j), H_j, y);
 }
 
 float KalmanFilter::normalizeAngle(float angle)
