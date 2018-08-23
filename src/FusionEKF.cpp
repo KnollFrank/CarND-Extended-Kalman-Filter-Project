@@ -42,6 +42,25 @@ FusionEKF::FusionEKF() {
   //set the acceleration noise components
   noise_ax = 9;
   noise_ay = 9;
+  ekf_.x_ = VectorXd(4);
+
+  //state covariance matrix P
+  ekf_.P_ = MatrixXd(4, 4);
+  ekf_.P_ << 1, 0, 0,    0,
+             0, 1, 0,    0,
+             0, 0, 1000, 0,
+             0, 0, 0,    1000;
+
+
+  //measurement matrix
+  ekf_.H_ = H_laser_;
+
+  //the initial transition matrix F_
+  ekf_.F_ = MatrixXd(4, 4);
+  ekf_.F_ << 1, 0, 1, 0,
+             0, 1, 0, 1,
+             0, 0, 1, 0,
+             0, 0, 0, 1;
 }
 
 /**
@@ -63,28 +82,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       * Create the covariance matrix.
       * Remember: you'll need to convert radar from polar to cartesian coordinates.
     */
-    // first measurement
     cout << "EKF: " << endl;
-    ekf_.x_ = VectorXd(4);
-
-    //state covariance matrix P
-    ekf_.P_ = MatrixXd(4, 4);
-    ekf_.P_ << 1, 0, 0,    0,
-               0, 1, 0,    0,
-               0, 0, 1000, 0,
-               0, 0, 0,    1000;
-
-
-    //measurement matrix
-    ekf_.H_ = H_laser_;
-
-    //the initial transition matrix F_
-    ekf_.F_ = MatrixXd(4, 4);
-    ekf_.F_ << 1, 0, 1, 0,
-               0, 1, 0, 1,
-               0, 0, 1, 0,
-               0, 0, 0, 1;
-
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       /**
       Convert radar from polar to cartesian coordinates and initialize state.
