@@ -46,6 +46,8 @@ private:
   Eigen::MatrixXd Hj_;
   float noise_ax;
   float noise_ay;
+
+  Eigen::VectorXd polar2cartesian(double ro, double theta);
 };
 
 #endif /* FusionEKF_H_ */

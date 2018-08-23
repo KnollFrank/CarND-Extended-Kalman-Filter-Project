@@ -87,24 +87,22 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       /**
       Convert radar from polar to cartesian coordinates and initialize state.
       */
-      // TODO: extract method
       double ro = measurement_pack.raw_measurements_(0);
       double theta = measurement_pack.raw_measurements_(1);
       double ro_dot = measurement_pack.raw_measurements_(2);
-      const double px = ro * cos(theta);
-      const double py = ro * sin(theta);
-      // TODO: wie werden Geschwindigkeiten von Polarkoordinaten in kartesische Koordinaten transformiert? nachrechnen!
-      const double vx = ro_dot * cos(theta);
-      const double vy = ro_dot * sin(theta);
 
-      ekf_.x_ << px, py, vx, vy;
+      VectorXd p = polar2cartesian(ro, theta);
+      // TODO: wie werden Geschwindigkeiten von Polarkoordinaten in kartesische Koordinaten transformiert? nachrechnen!
+      VectorXd v = polar2cartesian(ro_dot, theta);
+
+      ekf_.x_ << p(0), p(1), v(0), v(1);
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
       /**
       Initialize state.
       */
-      const double px = measurement_pack.raw_measurements_[0];
-      const double py = measurement_pack.raw_measurements_[1];
+      double px = measurement_pack.raw_measurements_[0];
+      double py = measurement_pack.raw_measurements_[1];
       ekf_.x_ << px, py, 0, 0;
     }
 
@@ -153,4 +151,10 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   // print the output
   cout << "x_ = " << ekf_.x_ << endl;
   cout << "P_ = " << ekf_.P_ << endl;
+}
+
+VectorXd FusionEKF::polar2cartesian(double ro, double theta) {
+  VectorXd result(2);
+  result << ro * cos(theta), ro * sin(theta);
+  return result;
 }
