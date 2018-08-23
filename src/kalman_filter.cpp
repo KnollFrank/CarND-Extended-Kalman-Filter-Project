@@ -49,8 +49,7 @@ void KalmanFilter::Predict(float dt, float noise_ax, float noise_ay) {
   updateQ(dt, noise_ax, noise_ay);
 
   x_ = F_ * x_;
-  MatrixXd Ft = F_.transpose();
-  P_ = F_ * P_ * Ft + Q_;
+  P_ = F_ * P_ * F_.transpose() + Q_;
 }
 
 void KalmanFilter::Update(const VectorXd &z) {
