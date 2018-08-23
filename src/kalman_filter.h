@@ -11,9 +11,6 @@ public:
   // state covariance matrix
   Eigen::MatrixXd P_;
 
-  // measurement covariance matrix
-  Eigen::MatrixXd R_;
-
   /**
    * Constructor
    */
@@ -34,7 +31,7 @@ public:
    * @param Q_in Process covariance matrix
    */
   void Init(Eigen::VectorXd &x_in, Eigen::MatrixXd &P_in, Eigen::MatrixXd &F_in,
-      Eigen::MatrixXd &H_in, Eigen::MatrixXd &R_in, Eigen::MatrixXd &Q_in);
+      Eigen::MatrixXd &H_in, Eigen::MatrixXd &Q_in);
 
   /**
    * Prediction Predicts the state and the state covariance
@@ -47,13 +44,13 @@ public:
    * Updates the state by using standard Kalman Filter equations
    * @param z The measurement at k+1
    */
-  void Update(const Eigen::VectorXd &z);
+  void Update(const Eigen::VectorXd &z, const Eigen::MatrixXd &R);
 
   /**
    * Updates the state by using Extended Kalman Filter equations
    * @param z The measurement at k+1
    */
-  void UpdateEKF(const Eigen::VectorXd &z);
+  void UpdateEKF(const Eigen::VectorXd &z, const Eigen::MatrixXd &R);
 
 private:
   // state transition matrix
@@ -63,9 +60,9 @@ private:
   // process covariance matrix
   Eigen::MatrixXd Q_;
 
-  Eigen::VectorXd h(const Eigen::VectorXd x);
-  void updateEstimates(const Eigen::MatrixXd& K, const Eigen::MatrixXd& H, const Eigen::VectorXd& y);
-  Eigen::MatrixXd getK(const Eigen::MatrixXd& H);
+  Eigen::VectorXd h(const Eigen::VectorXd &x);
+  void updateEstimates(const Eigen::MatrixXd &K, const Eigen::MatrixXd &H, const Eigen::VectorXd &y);
+  Eigen::MatrixXd getK(const Eigen::MatrixXd &H, const Eigen::MatrixXd &R);
   float normalizeAngle(float angle);
   void updateF(float dt);
   void updateQ(float dt, float noise_ax, float noise_ay);
