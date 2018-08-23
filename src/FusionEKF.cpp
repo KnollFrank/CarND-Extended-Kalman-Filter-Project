@@ -93,6 +93,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       double ro_dot = measurement_pack.raw_measurements_(2);
       const double px = ro * cos(theta);
       const double py = ro * sin(theta);
+      // TODO: wie werden Geschwindigkeiten von Polarkoordinaten in kartesische Koordinaten transformiert? nachrechnen!
       const double vx = ro_dot * cos(theta);
       const double vy = ro_dot * sin(theta);
 
