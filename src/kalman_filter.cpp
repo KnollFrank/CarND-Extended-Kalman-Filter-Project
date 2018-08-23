@@ -44,20 +44,8 @@ void KalmanFilter::Update(const VectorXd &z) {
   */
   VectorXd z_pred = H_ * x_;
   VectorXd y = z - z_pred;
-  MatrixXd Ht = H_.transpose();
-  MatrixXd S = H_ * P_ * Ht + R_;
-  MatrixXd Si = S.inverse();
-  MatrixXd PHt = P_ * Ht;
-  MatrixXd K = PHt * Si;
-
+  MatrixXd K = getK(H_);
   updateEstimates(K, H_, y);
-}
-
-void KalmanFilter::updateEstimates(const MatrixXd& K, const MatrixXd& H, const VectorXd& y) {
-  x_ = x_ + (K * y);
-  long x_size = x_.size();
-  MatrixXd I = MatrixXd::Identity(x_size, x_size);
-  P_ = (I - K * H) * P_;
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
@@ -70,14 +58,24 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   // TODO: apply hint Normalizing Angles in "Tips and Tricks"
   VectorXd y = z - h(x_);
   y(1) = atan2(sin(y(1)), cos(y(1)));
-  MatrixXd Ht = H_j.transpose();
-  MatrixXd S = H_j * P_ * Ht + R_;
+  MatrixXd K = getK(H_j);
+  updateEstimates(K, H_j, y);
+}
+
+MatrixXd KalmanFilter::getK(const MatrixXd& H) {
+  MatrixXd Ht = H.transpose();
+  MatrixXd S = H * P_ * Ht + R_;
   MatrixXd Si = S.inverse();
   MatrixXd PHt = P_ * Ht;
   MatrixXd K = PHt * Si;
+  return K;
+}
 
-  //new estimate
-  updateEstimates(K, H_j, y);
+void KalmanFilter::updateEstimates(const MatrixXd& K, const MatrixXd& H, const VectorXd& y) {
+  x_ = x_ + (K * y);
+  long x_size = x_.size();
+  MatrixXd I = MatrixXd::Identity(x_size, x_size);
+  P_ = (I - K * H) * P_;
 }
 
 VectorXd KalmanFilter::h(const VectorXd x) {
