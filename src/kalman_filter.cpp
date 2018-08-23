@@ -83,7 +83,7 @@ void KalmanFilter::updateEstimates(const MatrixXd& K, const MatrixXd& H, const V
 VectorXd KalmanFilter::h(const VectorXd x) {
   float px = x(0);
   float py = x(1);
-  float vx  = x(2);
+  float vx = x(2);
   float vy = x(3);
 
   float ro = sqrt(px*px + py*py);
