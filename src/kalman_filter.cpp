@@ -52,10 +52,12 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   TODO:
     * update the state by using Extended Kalman Filter equations
   */
-  Tools tools;
-  MatrixXd H_j = tools.CalculateJacobian(x_);
   VectorXd y = z - h(x_);
   y(1) = normalizeAngle(y(1));
+
+  Tools tools;
+  MatrixXd H_j = tools.CalculateJacobian(x_);
+
   updateEstimates(getK(H_j), H_j, y);
 }
 
